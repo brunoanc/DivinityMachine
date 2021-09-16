@@ -115,6 +115,7 @@ int main(int argc, char **argv)
             mipMap.mipPixelWidth = ceil(static_cast<double>(bimHeader.pixelWidth) / POWER_OF_TWO(j));
             mipMap.mipPixelHeight = ceil(static_cast<double>(bimHeader.pixelHeight) / POWER_OF_TWO(j));
 
+            // Formula from https://docs.microsoft.com/en-us/windows/win32/direct3ddds/dds-file-layout-for-textures
             mipMap.decompressedSize = std::max(1, (mipMap.mipPixelWidth + 3) / 4)
                 * std::max(1, (mipMap.mipPixelHeight + 3) / 4) * (bimHeader.textureFormat == 0x21 ? 8 : 16);
             mipMap.compressedSize = mipMap.decompressedSize;
