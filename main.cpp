@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cmath>
 
+// Prevent structs from having padding
 #pragma pack(push)
 #pragma pack(1)
 #include "dds.hpp"
