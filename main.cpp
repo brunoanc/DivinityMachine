@@ -104,7 +104,6 @@ int main(int argc, char **argv)
             bimHeader.textureMaterialKind = TMK_ALBEDO;
         }
 
-
         // Get mipmaps
         std::vector<BIMMipMap> bimMipMaps(bimHeader.mipCount);
 
