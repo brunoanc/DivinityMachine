@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <algorithm>
 #include <cstdio>
 #include <cstdint>
 #include <cstring>
@@ -14,7 +15,6 @@
 #pragma pack(pop)
 
 #define POWER_OF_TWO(x) (1 << x)
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 namespace fs = std::filesystem;
 
@@ -115,8 +115,8 @@ int main(int argc, char **argv)
             mipMap.mipPixelWidth = ceil(static_cast<double>(bimHeader.pixelWidth) / POWER_OF_TWO(j));
             mipMap.mipPixelHeight = ceil(static_cast<double>(bimHeader.pixelHeight) / POWER_OF_TWO(j));
 
-            mipMap.decompressedSize = MAX(1, (mipMap.mipPixelWidth + 3) / 4)
-                * MAX(1, (mipMap.mipPixelHeight + 3) / 4) * (bimHeader.textureFormat == 0x21 ? 8 : 16);
+            mipMap.decompressedSize = std::max(1, (mipMap.mipPixelWidth + 3) / 4)
+                * std::max(1, (mipMap.mipPixelHeight + 3) / 4) * (bimHeader.textureFormat == 0x21 ? 8 : 16);
             mipMap.compressedSize = mipMap.decompressedSize;
 
             mipMap.cumulativeSizeStreamDB = j == 0 ? 0 : bimMipMaps[j - 1].cumulativeSizeStreamDB + bimMipMaps[j - 1].decompressedSize;
