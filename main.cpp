@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
-#include <cstdint>
 #include <cstdio>
+#include <cstdint>
 #include <cstring>
 #include <cmath>
 
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
         // Read from dds file
         FILE *ddsFile = fopen(argv[i], "rb+");
 
-        if (ddsFile == NULL) {
+        if (ddsFile == nullptr) {
             std::cerr << "ERROR: Failed to open " << argv[i] << " for reading." << std::endl;
             continue;
         }
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
         DDSHeader ddsHeader;
         size_t ddsTextureSize = ddsFileSize - sizeof(ddsHeader) - 4;
-        uint8_t *ddsTexture = new uint8_t[ddsTextureSize];
+        auto *ddsTexture = new uint8_t[ddsTextureSize];
         
         fread(&ddsHeader, sizeof(ddsHeader), 1, ddsFile);
         fread(ddsTexture, 1, ddsTextureSize, ddsFile);
@@ -108,25 +108,25 @@ int main(int argc, char **argv)
         // Get mipmaps
         std::vector<BIMMipMap> bimMipMaps(bimHeader.mipCount);
 
-        for (int i = 0; i < bimHeader.mipCount; i++) {
-            auto& mipMap = bimMipMaps[i];
+        for (int j = 0; j < bimHeader.mipCount; j++) {
+            auto& mipMap = bimMipMaps[j];
 
-            mipMap.mipLevel = i;
-            mipMap.mipPixelWidth = ceil((double)bimHeader.pixelWidth / POWER_OF_TWO(i));
-            mipMap.mipPixelHeight = ceil((double)bimHeader.pixelHeight / POWER_OF_TWO(i));
+            mipMap.mipLevel = j;
+            mipMap.mipPixelWidth = ceil(static_cast<double>(bimHeader.pixelWidth) / POWER_OF_TWO(j));
+            mipMap.mipPixelHeight = ceil(static_cast<double>(bimHeader.pixelHeight) / POWER_OF_TWO(j));
 
             const int decMipSize = mipMap.mipPixelWidth * mipMap.mipPixelHeight / 2; // TODO: Support other formats
             mipMap.decompressedSize = decMipSize > 8 ? decMipSize : 8; // Make it at least 8
             mipMap.compressedSize = mipMap.decompressedSize;
 
-            mipMap.cumulativeSizeStreamDB = i == 0 ? 0 : bimMipMaps[i - 1].cumulativeSizeStreamDB + bimMipMaps[i - 1].decompressedSize;
+            mipMap.cumulativeSizeStreamDB = j == 0 ? 0 : bimMipMaps[j - 1].cumulativeSizeStreamDB + bimMipMaps[j - 1].decompressedSize;
         }
 
         // Write new BIM file
         const std::string exportedTgaFileName = fs::path(argv[i]).replace_extension(".tga").string();
         FILE *exportedTgaFile = fopen(exportedTgaFileName.c_str(), "wb");
 
-        if (exportedTgaFile == NULL) {
+        if (exportedTgaFile == nullptr) {
             std::cerr << "ERROR: Failed to open " << argv[i] << " for writing." << std::endl;
             continue;
         }
@@ -137,6 +137,6 @@ int main(int argc, char **argv)
         fwrite(ddsTexture, 1, ddsTextureSize, exportedTgaFile);
         fwrite(nullBytes, 1, sizeof(nullBytes), exportedTgaFile);
 
-        std::cout << "Succesfully converted " << argv[i] << " to TGA." << std::endl;
+        std::cout << "Successfully converted " << argv[i] << " to TGA." << std::endl;
     }
 }
