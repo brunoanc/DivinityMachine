@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 
         // Get texture material type
         std::string ddsFileName = fs::path(argv[i]).filename().string();
-        ddsFileName = ddsFileName.substr(0, ddsFileName.find('.'));
+        ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$")); // Strip extensions and $ properties
 
         if (endsWith(ddsFileName, "_n")) {
             bimHeader.textureMaterialKind = TMK_NORMAL;
