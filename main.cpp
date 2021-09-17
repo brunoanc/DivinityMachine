@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
         // Get the texture format
         // TODO: Add more texture formats
-        if (memcmp(&ddsHeader.ddspf.dwFourCC, "DTX1", 4) == 0) {
+        if (memcmp(&ddsHeader.ddspf.dwFourCC, "DXT1", 4) == 0) {
             bimHeader.textureFormat = FMT_BC1_SRGB;
         }
         else if (memcmp(&ddsHeader.ddspf.dwFourCC, "ATI2", 4) == 0) {
