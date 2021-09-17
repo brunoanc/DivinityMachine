@@ -6,7 +6,7 @@ Cross-platform texture converter from DDS to DOOM Eternal's TGA format.
 
 To read more about the DOOM Eternal TGA format, click [here](https://wiki.eternalmods.com/books/reverse-engineering-file-formats/page/tga-file-extension-bimage).
 
-NOTE: As of now, this tool only supports BC1 format DDS files.
+NOTE: As of now, this tool only supports BC1 and BC5 format DDS files.
 
 ## Usage
 

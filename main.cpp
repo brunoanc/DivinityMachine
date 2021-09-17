@@ -60,7 +60,7 @@ int main(int argc, char **argv)
         }
 
         DDSHeader ddsHeader;
-        size_t ddsTextureSize = ddsFileSize - sizeof(ddsHeader) - 4;
+        size_t ddsTextureSize = ddsFileSize - sizeof(ddsHeader);
         auto *ddsTexture = new uint8_t[ddsTextureSize];
         
         fread(&ddsHeader, sizeof(ddsHeader), 1, ddsFile);
@@ -78,7 +78,21 @@ int main(int argc, char **argv)
         bimHeader.pixelWidth = ddsHeader.dwWidth;
         bimHeader.pixelHeight = ddsHeader.dwHeight;
         bimHeader.mipCount = ddsHeader.dwMipMapCount;
-        bimHeader.textureFormat = 0x21; // TODO: Get texture format from file
+
+        // Get the texture format
+        // TODO: Add more texture formats
+        if (memcmp(&ddsHeader.ddspf.dwFourCC, "DTX1", 4) == 0) {
+            bimHeader.textureFormat = FMT_BC1_SRGB;
+            std::cout << "BC1" << std::endl;
+        }
+        else if (memcmp(&ddsHeader.ddspf.dwFourCC, "ATI2", 4) == 0) {
+            bimHeader.textureFormat = FMT_BC5;
+            std::cout << "BC5" << std::endl;
+        }
+        else {
+            std::cerr << "ERROR: " << argv[i] << " has an unsupported DDS format." << std::endl;
+            continue;
+        }
 
         // Get texture material type
         std::string ddsFileName = fs::path(argv[i]).stem().string();
@@ -132,11 +146,19 @@ int main(int argc, char **argv)
             continue;
         }
 
-        uint8_t nullBytes[4] = { 0 };
         fwrite(&bimHeader, sizeof(bimHeader), 1, exportedTgaFile);
         fwrite(bimMipMaps.data(), sizeof(BIMMipMap), bimMipMaps.size(), exportedTgaFile);
-        fwrite(ddsTexture, 1, ddsTextureSize, exportedTgaFile);
-        fwrite(nullBytes, 1, sizeof(nullBytes), exportedTgaFile);
+
+        if (bimHeader.textureFormat == FMT_BC5) {
+            const uint8_t endBytes[16] = { 0x87, 0x86, 0x49, 0x92, 0x24, 0x49, 0x92, 0x24, 0x86, 0x85, 0x49, 0x92, 0x24, 0x49, 0x92, 0x24 };
+            fwrite(ddsTexture, 1, ddsTextureSize - 16, exportedTgaFile);
+            fwrite(endBytes, 1, sizeof(endBytes), exportedTgaFile);
+        }
+        else {
+            const uint8_t nullBytes[4] = { 0 };
+            fwrite(ddsTexture, 1, ddsTextureSize - 4, exportedTgaFile);
+            fwrite(nullBytes, 1, sizeof(nullBytes), exportedTgaFile); 
+        }
 
         std::cout << "Successfully converted " << argv[i] << " to TGA." << std::endl;
     }
