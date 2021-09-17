@@ -83,11 +83,9 @@ int main(int argc, char **argv)
         // TODO: Add more texture formats
         if (memcmp(&ddsHeader.ddspf.dwFourCC, "DTX1", 4) == 0) {
             bimHeader.textureFormat = FMT_BC1_SRGB;
-            std::cout << "BC1" << std::endl;
         }
         else if (memcmp(&ddsHeader.ddspf.dwFourCC, "ATI2", 4) == 0) {
             bimHeader.textureFormat = FMT_BC5;
-            std::cout << "BC5" << std::endl;
         }
         else {
             std::cerr << "ERROR: " << argv[i] << " has an unsupported DDS format." << std::endl;
