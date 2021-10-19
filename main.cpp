@@ -14,6 +14,12 @@
 #include "bimage.hpp"
 #pragma pack(pop)
 
+// Undefine max to prevent namespace conflicts with MSVC
+#ifdef max
+#undef max
+#endif
+
+// Use bitwise operation to get power of two
 #define POWER_OF_TWO(x) (1 << x)
 
 namespace fs = std::filesystem;
@@ -21,12 +27,10 @@ namespace fs = std::filesystem;
 // Check if string ends with substring
 bool endsWith(const std::string& fullString, const std::string& suffix)
 {
-    if (fullString.length() >= suffix.length()) {
+    if (fullString.length() >= suffix.length())
         return 0 == fullString.compare(fullString.length() - suffix.length(), suffix.length(), suffix);
-    }
-    else {
+    else
         return false;
-    }
 }
 
 int main(int argc, char **argv)
