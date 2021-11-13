@@ -15,6 +15,15 @@ typedef struct DDSPixelFormat {
     int32_t dwABitMask;
 } DDSPixelFormat;
 
+// DX10 header (for BC7 format)
+typedef struct DDSHeaderDXT10 {
+    int32_t dxgiFormat;
+    int32_t resourceDimension;
+    int32_t miscFlag;
+    int32_t arraySize;
+    int32_t miscFlags2;
+} DDSHeaderDXT10;
+
 // DDS header
 typedef struct DDSHeader {
     char dwMagic[4];
