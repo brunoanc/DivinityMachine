@@ -35,6 +35,12 @@ bool endsWith(const std::string& fullString, const std::string& suffix)
     }
 }
 
+// Check if string contains substring
+inline bool contains(const std::string& fullString, const std::string& subString)
+{
+    return fullString.find(subString) != std::string::npos;
+}
+
 int main(int argc, char **argv)
 {
     std::cout << "DivinityMachine by PowerBall253\n" << std::endl;
@@ -138,19 +144,19 @@ int main(int argc, char **argv)
         else if (endsWith(ddsFileName, "_sss")) {
             bimHeader.textureMaterialKind = TMK_SSSMASK;
         }
-        else if (endsWith(ddsFileName, "mtlkind=ui")) {
+        else if (contains(ddsFileName, "mtlkind=ui")) {
             bimHeader.textureMaterialKind = TMK_UI;
         }
-        else if (endsWith(ddsFileName, "mtlkind=decalnormal")) {
+        else if (contains(ddsFileName, "mtlkind=decalnormal")) {
             bimHeader.textureMaterialKind = TMK_DECALNORMAL;
         }
-        else if (endsWith(ddsFileName, "mtlkind=decalalbedo")) {
+        else if (contains(ddsFileName, "mtlkind=decalalbedo")) {
             bimHeader.textureMaterialKind = TMK_DECALALBEDO;
         }
-        else if (endsWith(ddsFileName, "mtlkind=decalspecular")) {
+        else if (contains(ddsFileName, "mtlkind=decalspecular")) {
             bimHeader.textureMaterialKind = TMK_DECALSPECULAR;
         }
-        else if (endsWith(ddsFileName, "mtlkind=particle")) {
+        else if (contains(ddsFileName, "mtlkind=particle")) {
             bimHeader.textureMaterialKind = TMK_PARTICLE;
         }
         else if (isDXT10Format) {
