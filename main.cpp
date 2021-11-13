@@ -153,6 +153,9 @@ int main(int argc, char **argv)
         else if (endsWith(ddsFileName, "mtlkind=particle")) {
             bimHeader.textureMaterialKind = TMK_PARTICLE;
         }
+        else if (isDXT10Format) {
+            bimHeader.textureMaterialKind = TMK_NONE;
+        }
         else {
             bimHeader.textureMaterialKind = TMK_ALBEDO;
         }
@@ -181,7 +184,15 @@ int main(int argc, char **argv)
         }
 
         // Write new BIM file
-        const std::string exportedTgaFileName = fs::path(argv[i]).replace_extension(".tga").string();
+        std::string exportedTgaFileName;
+
+        if (bimHeader.textureMaterialKind == TMK_UI) {
+            exportedTgaFileName = fs::path(argv[i]).replace_extension(".png").string();
+        }
+        else {
+            exportedTgaFileName = fs::path(argv[i]).replace_extension(".tga").string();
+        }
+
         FILE *exportedTgaFile = fopen(exportedTgaFileName.c_str(), "wb");
 
         if (exportedTgaFile == nullptr) {
