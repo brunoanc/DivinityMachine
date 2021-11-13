@@ -27,10 +27,12 @@ namespace fs = std::filesystem;
 // Check if string ends with substring
 bool endsWith(const std::string& fullString, const std::string& suffix)
 {
-    if (fullString.length() >= suffix.length())
+    if (fullString.length() >= suffix.length()) {
         return 0 == fullString.compare(fullString.length() - suffix.length(), suffix.length(), suffix);
-    else
+    }
+    else {
         return false;
+    }
 }
 
 int main(int argc, char **argv)
@@ -58,7 +60,7 @@ int main(int argc, char **argv)
         size_t ddsFileSize = ftell(ddsFile);
         fseek(ddsFile, 0, SEEK_SET);
 
-        if (ddsFileSize < 128) {
+        if (ddsFileSize < sizeof(DDSHeader)) {
             std::cerr << "ERROR: " << argv[i] << " is not a valid DDS file." << std::endl;
             continue;
         }
@@ -79,7 +81,7 @@ int main(int argc, char **argv)
         }
 
         // Read texture data
-        auto* ddsTexture = new uint8_t[ddsTextureSize];
+        auto *ddsTexture = new uint8_t[ddsTextureSize];
         fread(ddsTexture, 1, ddsTextureSize, ddsFile);
         fclose(ddsFile);
 
@@ -115,7 +117,7 @@ int main(int argc, char **argv)
 
         // For DXT10, don't strip extensions until after TMK check
         if (!isDXT10Format) {
-            ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$"));  
+            ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$"));
         }
         
         if (endsWith(ddsFileName, "_n") || endsWith(ddsFileName, "_Normal")) {
@@ -157,7 +159,7 @@ int main(int argc, char **argv)
 
         // Strip extensions and $ properties for DXT10 files - other file types already stripped.
         if (isDXT10Format) {
-            ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$"));  
+            ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$"));
         }
 
         // Get mipmaps
@@ -172,7 +174,7 @@ int main(int argc, char **argv)
 
             // Formula from https://docs.microsoft.com/en-us/windows/win32/direct3ddds/dds-file-layout-for-textures
             mipMap.decompressedSize = std::max(1, (mipMap.mipPixelWidth + 3) / 4)
-                * std::max(1, (mipMap.mipPixelHeight + 3) / 4) * (bimHeader.textureFormat == 0x21 ? 8 : 16);
+                * std::max(1, (mipMap.mipPixelHeight + 3) / 4) * (bimHeader.textureFormat == FMT_BC1_SRGB ? 8 : 16);
             mipMap.compressedSize = mipMap.decompressedSize;
 
             mipMap.cumulativeSizeStreamDB = j == 0 ? 0 : bimMipMaps[j - 1].cumulativeSizeStreamDB + bimMipMaps[j - 1].decompressedSize;
