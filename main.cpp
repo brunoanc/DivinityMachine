@@ -120,10 +120,11 @@ int main(int argc, char **argv)
 
         // Get texture material type
         std::string ddsFileName = fs::path(argv[i]).filename().string();
+        std::string strippedDollarSection = ddsFileName.substr(0, ddsFileName.find_first_of("$"));
 
         // For DXT10, don't strip extensions until after TMK check
         if (!isDXT10Format) {
-            ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$"));
+            ddsFileName = strippedDollarSection.substr(0, ddsFileName.find_first_of("."));
         }
         
         if (endsWith(ddsFileName, "_n") || endsWith(ddsFileName, "_Normal")) {
@@ -187,8 +188,8 @@ int main(int argc, char **argv)
         // Write new BIM file
         std::string exportedTgaFileName;
 
-        // Check if the file uses .png extension (BC7 files only)
-        if (isDXT10Format && endsWith(ddsFileName.substr(0, ddsFileName.find_first_of("$")), ".png")) {
+        // Check if the file uses .png extension
+        if (endsWith(strippedDollarSection, ".png")) {
             exportedTgaFileName = fs::path(argv[i]).replace_extension(".png").string();
         }
         else {
