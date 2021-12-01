@@ -166,11 +166,6 @@ int main(int argc, char **argv)
             bimHeader.textureMaterialKind = TMK_ALBEDO;
         }
 
-        // Strip extensions and $ properties for DXT10 files - other file types already stripped.
-        if (isDXT10Format) {
-            ddsFileName = ddsFileName.substr(0, ddsFileName.find_first_of(".$"));
-        }
-
         // Get mipmaps
         std::vector<BIMMipMap> bimMipMaps(bimHeader.mipCount);
 
@@ -192,7 +187,8 @@ int main(int argc, char **argv)
         // Write new BIM file
         std::string exportedTgaFileName;
 
-        if (bimHeader.textureMaterialKind == TMK_UI) {
+        // Check if the file uses .png extension (BC7 files only)
+        if (isDXT10Format && endsWith(ddsFileName.substr(0, ddsFileName.find_first_of("$")), ".png")) {
             exportedTgaFileName = fs::path(argv[i]).replace_extension(".png").string();
         }
         else {
