@@ -52,6 +52,9 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    // Count failures
+    int failures = 0;
+
     // Iterate through passed arguments
     for (int i = 1; i < argc; i++) {
         // Read from dds file
@@ -59,6 +62,7 @@ int main(int argc, char **argv)
 
         if (ddsFile == nullptr) {
             std::cerr << "ERROR: Failed to open " << argv[i] << " for reading." << std::endl;
+            failures += 1;
             continue;
         }
 
@@ -68,6 +72,7 @@ int main(int argc, char **argv)
 
         if (ddsFileSize < sizeof(DDSHeader)) {
             std::cerr << "ERROR: " << argv[i] << " is not a valid DDS file." << std::endl;
+            failures += 1;
             continue;
         }
 
@@ -94,6 +99,7 @@ int main(int argc, char **argv)
         // Check magic
         if (memcmp(ddsHeader.dwMagic, "DDS ", 4) != 0) {
             std::cerr << "ERROR: " << argv[i] << " is not a valid DDS file." << std::endl;
+            failures += 1;
             continue;
         }
 
@@ -115,6 +121,7 @@ int main(int argc, char **argv)
         }
         else {
             std::cerr << "ERROR: " << argv[i] << " has an unsupported DDS format." << std::endl;
+            failures += 1;
             continue;
         }
 
@@ -200,6 +207,7 @@ int main(int argc, char **argv)
 
         if (exportedTgaFile == nullptr) {
             std::cerr << "ERROR: Failed to open " << argv[i] << " for writing." << std::endl;
+            failures += 1;
             continue;
         }
 
@@ -219,4 +227,6 @@ int main(int argc, char **argv)
 
         std::cout << "Successfully converted " << argv[i] << " to TGA." << std::endl;
     }
+
+    return failures;
 }
