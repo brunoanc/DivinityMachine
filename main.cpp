@@ -84,9 +84,9 @@ int main(int argc, char **argv)
         fread(&ddsHeader, sizeof(DDSHeader), 1, ddsFile);
 
         // Check for DXT10 Header, read it if present
+        DDSHeaderDXT10 ddsHeaderDXT10;
         if (memcmp(&ddsHeader.ddspf.dwFourCC, "DX10", 4) == 0) {
             isDXT10Format = true;
-            DDSHeaderDXT10 ddsHeaderDXT10;
             fread(&ddsHeaderDXT10, sizeof(DDSHeaderDXT10), 1, ddsFile);
             ddsTextureSize -= sizeof(ddsHeaderDXT10);
         }
@@ -110,27 +110,38 @@ int main(int argc, char **argv)
         bimHeader.mipCount = ddsHeader.dwMipMapCount;
 
         // Get the texture format
-        if (memcmp(&ddsHeader.ddspf.dwFourCC, "DXT1", 4) == 0) {
-            bimHeader.textureFormat = FMT_BC1_SRGB;
+        if (isDXT10Format) {
+            if (ddsHeaderDXT10.dxgiFormat == 71) {
+                bimHeader.textureFormat = FMT_BC1_SRGB;
+            }
+            else if (ddsHeaderDXT10.dxgiFormat == 83) {
+                bimHeader.textureFormat = FMT_BC5;
+            }
+            else {
+                bimHeader.textureFormat = FMT_BC7;
+            }
         }
-        else if (memcmp(&ddsHeader.ddspf.dwFourCC, "ATI2", 4) == 0) {
-            bimHeader.textureFormat = FMT_BC5;
-        }
-        else if (isDXT10Format) {
-            bimHeader.textureFormat = FMT_BC7;
-        }
-        else {
-            std::cerr << "ERROR: " << argv[i] << " has an unsupported DDS format." << std::endl;
-            failures += 1;
-            continue;
+
+        if (!isDXT10Format) {
+            if (memcmp(&ddsHeader.ddspf.dwFourCC, "DXT1", 4) == 0) {
+                bimHeader.textureFormat = FMT_BC1_SRGB;
+            }
+            else if (memcmp(&ddsHeader.ddspf.dwFourCC, "ATI2", 4) == 0) {
+                bimHeader.textureFormat = FMT_BC5;
+            }
+            else {
+                std::cerr << "ERROR: " << argv[i] << " has an unsupported DDS format." << std::endl;
+                failures += 1;
+                continue;
+            }
         }
 
         // Get texture material type
         std::string ddsFileName = fs::path(argv[i]).filename().string();
         std::string strippedDollarSection = ddsFileName.substr(0, ddsFileName.find_first_of("$"));
 
-        // For DXT10, don't strip extensions until after TMK check
-        if (!isDXT10Format) {
+        // For BC7, don't strip extensions until after TMK check
+        if (bimHeader.textureFormat != FMT_BC7) {
             ddsFileName = strippedDollarSection.substr(0, ddsFileName.find_first_of("."));
         }
         
@@ -167,11 +178,11 @@ int main(int argc, char **argv)
         else if (contains(ddsFileName, "mtlkind=particle")) {
             bimHeader.textureMaterialKind = TMK_PARTICLE;
         }
-        else if (isDXT10Format) {
-            bimHeader.textureMaterialKind = TMK_NONE;
+        else if (bimHeader.textureFormat == FMT_BC1_SRGB) {
+            bimHeader.textureMaterialKind = TMK_ALBEDO; 
         }
         else {
-            bimHeader.textureMaterialKind = TMK_ALBEDO;
+            bimHeader.textureMaterialKind = TMK_NONE;
         }
 
         // Get mipmaps
