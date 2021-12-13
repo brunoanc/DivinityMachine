@@ -85,6 +85,7 @@ int main(int argc, char **argv)
 
         // Check for DXT10 Header, read it if present
         DDSHeaderDXT10 ddsHeaderDXT10;
+
         if (memcmp(&ddsHeader.ddspf.dwFourCC, "DX10", 4) == 0) {
             isDXT10Format = true;
             fread(&ddsHeaderDXT10, sizeof(DDSHeaderDXT10), 1, ddsFile);
@@ -111,18 +112,19 @@ int main(int argc, char **argv)
 
         // Get the texture format
         if (isDXT10Format) {
-            if (ddsHeaderDXT10.dxgiFormat == 71) {
-                bimHeader.textureFormat = FMT_BC1_SRGB;
-            }
-            else if (ddsHeaderDXT10.dxgiFormat == 83) {
-                bimHeader.textureFormat = FMT_BC5;
-            }
-            else {
-                bimHeader.textureFormat = FMT_BC7;
+            switch (ddsHeaderDXT10.dxgiFormat) {
+                case 71:
+                    bimHeader.textureFormat = FMT_BC1_SRGB;
+                    break;
+                case 83:
+                    bimHeader.textureFormat = FMT_BC5;
+                    break;
+                default:
+                    bimHeader.textureFormat = FMT_BC7;
+                    break;
             }
         }
-
-        if (!isDXT10Format) {
+        else {
             if (memcmp(&ddsHeader.ddspf.dwFourCC, "DXT1", 4) == 0) {
                 bimHeader.textureFormat = FMT_BC1_SRGB;
             }
