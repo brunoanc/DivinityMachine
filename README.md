@@ -1,3 +1,5 @@
+**NOTE: This tool is no longer needed to convert textures to the BIM format. You should now use [Auto Heckin' Texture Converter](https://github.com/PowerBall253/AutoHeckinTextureConverter).**
+
 # DivinityMachine
 
 ![Build Status](https://github.com/PowerBall253/DivinityMachine/actions/workflows/build.yml/badge.svg)
